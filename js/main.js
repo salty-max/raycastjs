@@ -3,7 +3,7 @@ const MAP_ROWS = 16;
 const MAP_COLS = 16;
 const WINDOW_WIDTH = 512;
 const WINDOW_HEIGHT = 512;
-const FOV_ANGLE = 60 * (Math.PI / 180);
+const FOV_ANGLE = degToRad(90);
 const WALL_STRIP_WIDTH = 1;
 const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
 
@@ -61,7 +61,7 @@ class Player {
     this.walkDirection = 0; // -1 is back, 1 is front
     this.rotationAngle = -(Math.PI / 2);
     this.moveSpeed = 3.0;
-    this.rotationSpeed = 3 * (Math.PI / 180);
+    this.rotationSpeed = degToRad(3);
   }
 
   update() {
@@ -127,7 +127,8 @@ class Ray {
     yStep *= this.isRayFacingUp ? -1 : 1;
 
     xStep = yStep / Math.tan(this.rayAngle);
-    xStep *= (this.isRayFacingLeft && xStep > 0) || (this.isRayFacingRight && xStep < 0) ? -1 : 1;
+    xStep *= (this.isRayFacingLeft && xStep > 0) ? -1 : 1;
+    xStep *= (this.isRayFacingRight && xStep < 0) ? -1 : 1;
 
     let nextHorizontalTouchX = xIntercept;
     let nextHorizontalTouchY = yIntercept;
@@ -159,7 +160,7 @@ class Ray {
     xIntercept += this.isRayFacingRight ? TILE_SIZE : 0; 
 
     // Find the y-coordinate of the closest vertical grid intersection
-    yIntercept = player.y + (xIntercept - player.x) / Math.tan(this.rayAngle);
+    yIntercept = player.y + (xIntercept - player.x) * Math.tan(this.rayAngle);
 
     // Calculate increment for xStep and yStep
     xStep = TILE_SIZE;
@@ -208,7 +209,7 @@ class Ray {
   }
 
   render() {
-    stroke("green");
+    stroke("rgba(255, 0, 0, 0.3)");
     line(player.x, player.y, this.wallHitX, this.wallHitY);
     noStroke();
   }
