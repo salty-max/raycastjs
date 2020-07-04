@@ -68,7 +68,7 @@ class Player {
     this.walkDirection = 0; // -1 is back, 1 is front
     this.rotationAngle = -(Math.PI / 2);
     this.moveSpeed = 3.0;
-    this.rotationSpeed = degToRad(3);
+    this.rotationSpeed = degToRad(2);
   }
 
   update() {
@@ -275,6 +275,26 @@ function castAllRays() {
 
 }
 
+function render3DProjectedWalls() {
+  // Loop every ray
+  rays.forEach((ray, index) => {
+    const rayDistance = ray.distance;
+    // Calculate the distance to the projection plane
+    const distanceProjectionPlane = (WINDOW_WIDTH / 2) * Math.tan(FOV_ANGLE / 2);
+    // Projected wall height
+    const wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
+
+    fill("rgba(255, 255, 255, 1.0");
+    noStroke();
+    rect(
+      index * WALL_STRIP_WIDTH,
+      (WINDOW_HEIGHT / 2) - (wallStripHeight / 2),
+      WALL_STRIP_WIDTH,
+      wallStripHeight
+    );
+  })
+}
+
 function degToRad(a) {
   return a * (Math.PI / 180);
 } 
@@ -301,7 +321,11 @@ function update() {
 };
 
 function draw() {
+  clear("#212121");
   update();
+
+  render3DProjectedWalls();
+
   grid.render();
   rays.forEach(ray => {
       ray.render();
