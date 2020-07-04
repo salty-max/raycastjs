@@ -1,10 +1,6 @@
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 canvas {
+  margin: auto;
+  display: block;
   border-radius: 10px;
   background-color: black;
 }
