@@ -4,7 +4,7 @@ const MAP_COLS = 16;
 const WINDOW_WIDTH = MAP_COLS * TILE_SIZE;
 const WINDOW_HEIGHT = MAP_ROWS * TILE_SIZE;
 const FOV_ANGLE = degToRad(60);
-const WALL_STRIP_WIDTH = 8;
+const WALL_STRIP_WIDTH = 1;
 const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
 
 const MINIMAP_SCALE_FACTOR = 0.2;
@@ -115,7 +115,7 @@ class Ray {
     this.isRayFacingLeft = !this.isRayFacingRight;
   }
 
-  cast(columnIndex) {
+  cast() {
     let xIntercept, yIntercept;
     let xStep, yStep;
 
@@ -143,12 +143,10 @@ class Ray {
 
     let nextHorizontalTouchX = xIntercept;
     let nextHorizontalTouchY = yIntercept;
-    if (this.isRayFacingUp)
-      nextHorizontalTouchY--;
     
     // Increment xStep and yStep until we find a wall
     while(nextHorizontalTouchX >= 0 && nextHorizontalTouchX <= WINDOW_WIDTH && nextHorizontalTouchY >= 0 && nextHorizontalTouchY <= WINDOW_HEIGHT) {
-      if (grid.isWallAt(nextHorizontalTouchX, nextHorizontalTouchY)) {
+      if (grid.isWallAt(nextHorizontalTouchX, nextHorizontalTouchY - (this.isRayFacingUp ? 1 : 0))) {
         foundHorizontalWallHit = true;
         horizontalWallHitX = nextHorizontalTouchX;
         horizontalWallHitY = nextHorizontalTouchY;
@@ -182,12 +180,10 @@ class Ray {
 
     let nextVerticalTouchX = xIntercept;
     let nextVerticalTouchY = yIntercept;
-    if (this.isRayFacingLeft)
-      nextVerticalTouchX--;
     
     // Increment xStep and yStep until we find a wall
     while(nextVerticalTouchX >= 0 && nextVerticalTouchX <= WINDOW_WIDTH && nextVerticalTouchY >= 0 && nextVerticalTouchY <= WINDOW_HEIGHT) {
-      if (grid.isWallAt(nextVerticalTouchX, nextVerticalTouchY)) {
+      if (grid.isWallAt(nextVerticalTouchX - (this.isRayFacingLeft ? 1 : 0), nextVerticalTouchY)) {
         foundVerticalWallHit = true;
         verticalWallHitX = nextVerticalTouchX;
         verticalWallHitY = nextVerticalTouchY;
@@ -220,7 +216,7 @@ class Ray {
   }
 
   render() {
-    stroke("rgba(255, 0, 0, 0.3)");
+    stroke("rgba(128, 128, 128, 0.1)");
     line(
       MINIMAP_SCALE_FACTOR * player.x,
       MINIMAP_SCALE_FACTOR * player.y,
@@ -258,7 +254,6 @@ function keyReleased() {
 }
 
 function castAllRays() {
-  let columnIndex = 0;
   rays = [];
 
   // Cast first ray at half of the FOV
@@ -266,11 +261,10 @@ function castAllRays() {
 
   for (let i = 0; i < NUM_RAYS; i++) {
     const ray = new Ray(rayAngle);
-    ray.cast(columnIndex);
+    ray.cast();
     rays.push(ray);
 
     rayAngle += FOV_ANGLE / NUM_RAYS;
-    columnIndex++;
   }
 
 }
