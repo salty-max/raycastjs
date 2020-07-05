@@ -278,9 +278,10 @@ function render3DProjectedWalls() {
     const distanceProjectionPlane = (WINDOW_WIDTH / 2) * Math.tan(FOV_ANGLE / 2);
     // Projected wall height
     const wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
-    // Farther the wall is, darker it is
-    const alpha = 180 / rayDistance;
-    fill(`rgba(255, 255, 255, ${alpha})`);
+    const alpha = 1.0;
+    // Fake shadow
+    let color = ray.wasHitVertical ? 255 : 180;
+    fill(`rgba(${color}, ${color}, ${color}, ${alpha})`);
     noStroke();
     rect(
       index * WALL_STRIP_WIDTH,
